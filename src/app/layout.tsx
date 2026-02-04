@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Inter, Orbitron } from 'next/font/google';
 import './globals.css';
 import { cn } from "@/lib/utils";
 import { Header } from '@/app/components/header';
@@ -10,6 +11,19 @@ export const metadata: Metadata = {
   description: 'Analyze news articles for credibility and detect fake news with the power of AI.',
 };
 
+const fontBody = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+const fontHeadline = Orbitron({
+  subsets: ['latin'],
+  weight: '700',
+  display: 'swap',
+  variable: '--font-orbitron',
+});
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,12 +31,8 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" suppressHydrationWarning className={`${fontBody.variable} ${fontHeadline.variable}`}>
+      <head />
       <body className={cn("font-body antialiased min-h-screen")}>
         <div
             className="fixed inset-0 z-[-1] bg-cover bg-center"
@@ -30,7 +40,7 @@ export default function RootLayout({
                 backgroundImage: "url('https://storage.googleapis.com/project-123-files/user/53b89981-4475-4303-9d7a-350730b6b0c2.png')",
             }}
         />
-        <div className="relative flex min-h-screen flex-col bg-background/90 backdrop-blur-sm">
+        <div className="relative flex min-h-screen flex-col bg-background/90">
           {/* Decorative HUD elements */}
           <div className="absolute inset-0 z-0 pointer-events-none">
               {/* Corner brackets */}

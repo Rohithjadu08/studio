@@ -8,7 +8,7 @@ export const Header: FC = () => {
         <div className="mr-4 flex">
           <a className="mr-6 flex items-center space-x-2" href="/">
             <SearchCheck className="h-6 w-6 text-primary" />
-            <span className="font-bold sm:inline-block font-headline text-glow-primary">
+            <span className="font-bold sm:inline-block font-headline text-glow-primary text-3d">
               TruthSeeker
             </span>
           </a>

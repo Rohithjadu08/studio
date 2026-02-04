@@ -65,7 +65,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: url('https://images.unsplash.com/photo-1619895292017-afd3f7c4e516?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBpbiUyMHN1aXQlMjBmb2dneSUyMHN0cmVldHxlbnwwfHx8fDE3MTk0MjA1NjV8MA&ixlib=rb-4.1.0&q=80&w=1080');
+    background-image: url('https://storage.googleapis.com/project-123-files/user/e9b6a5f0-32b7-4c74-8777-7e6146051d14.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -78,7 +78,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: hsl(var(--background) / 0.7);
+    background-color: hsl(var(--background) / 0.5);
     z-index: -1;
   }
 }

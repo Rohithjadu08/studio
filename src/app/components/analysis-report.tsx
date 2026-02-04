@@ -32,7 +32,7 @@ const CredibilityScore: FC<{ score: number }> = ({ score }) => {
     const scoreClasses = getScoreClasses(score);
 
     return (
-        <Card className="border-primary/20 bg-black/30 backdrop-blur-md">
+        <Card className="border-primary/20 bg-card/70 backdrop-blur-md">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg text-glow-primary">
                     <TrendingUp className="text-primary" />
@@ -63,7 +63,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
 
       <Accordion type="multiple" defaultValue={['content-analysis', 'source-analysis']} className="w-full space-y-4">
         {contentAnalysis && (
-          <Card className="border-primary/20 bg-black/30 backdrop-blur-md">
+          <Card className="border-primary/20 bg-card/70 backdrop-blur-md">
             <AccordionItem value="content-analysis" className="border-b-0">
               <AccordionTrigger className="p-6 text-lg font-headline hover:no-underline">
                 <div className="flex items-center gap-3">
@@ -102,7 +102,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
         )}
 
         {sourceAnalysis && (
-          <Card className="border-primary/20 bg-black/30 backdrop-blur-md">
+          <Card className="border-primary/20 bg-card/70 backdrop-blur-md">
             <AccordionItem value="source-analysis" className="border-b-0">
               <AccordionTrigger className="p-6 text-lg font-headline hover:no-underline">
                 <div className="flex items-center gap-3">
@@ -139,7 +139,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
       </Accordion>
 
       {correctiveNews && correctiveNews.correctiveNewsLinks.length > 0 && (
-        <Card className="border-accent/20 bg-black/30 backdrop-blur-md">
+        <Card className="border-accent/20 bg-card/70 backdrop-blur-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg text-glow-accent">
                 <CheckCircle2 className="text-accent" />
@@ -160,7 +160,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
         </Card>
       )}
 
-      <Card className="border-primary/20 bg-black/30 backdrop-blur-md">
+      <Card className="border-primary/20 bg-card/70 backdrop-blur-md">
         <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm font-medium">Was this analysis helpful?</p>
             <div className="flex items-center gap-2">

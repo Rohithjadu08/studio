@@ -30,7 +30,7 @@ export default function RootLayout({
                 backgroundImage: "url('https://storage.googleapis.com/project-123-files/user/e9b6a5f0-32b7-4c74-8777-7e6146051d14.png')",
             }}
         />
-        <div className="relative flex min-h-screen flex-col bg-background/70">
+        <div className="relative flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">{children}</main>
         </div>

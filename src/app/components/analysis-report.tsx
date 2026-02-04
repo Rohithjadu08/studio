@@ -7,41 +7,42 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, Link as LinkIcon, Newspaper, Shield, ThumbsDown, ThumbsUp, TrendingUp, XCircle } from 'lucide-react';
 import type { AnalysisResult } from '@/app/actions';
 
-const getScoreColorClass = (score: number) => {
-    if (score < 0.4) return 'red';
-    if (score < 0.7) return 'yellow';
-    return 'green';
+const getScoreClasses = (score: number) => {
+    if (score < 0.4) return { 
+        progress: '[&>*]:bg-destructive',
+        text: 'text-destructive',
+        glow: 'text-glow-destructive',
+        progressGlow: 'progress-glow-destructive'
+    };
+    if (score < 0.7) return {
+        progress: '[&>*]:bg-primary',
+        text: 'text-primary',
+        glow: 'text-glow-primary',
+        progressGlow: 'progress-glow-primary'
+    };
+    return {
+        progress: '[&>*]:bg-accent',
+        text: 'text-accent',
+        glow: 'text-glow-accent',
+        progressGlow: 'progress-glow-accent'
+    };
 };
 
 const CredibilityScore: FC<{ score: number }> = ({ score }) => {
-    const scoreColor = getScoreColorClass(score);
-    const colorClasses = {
-        red: {
-            progress: '[&>*]:bg-red-500',
-            text: 'text-red-500',
-        },
-        yellow: {
-            progress: '[&>*]:bg-yellow-500',
-            text: 'text-yellow-500',
-        },
-        green: {
-            progress: '[&>*]:bg-accent',
-            text: 'text-accent',
-        },
-    };
+    const scoreClasses = getScoreClasses(score);
 
     return (
-        <Card>
+        <Card className="border-primary/20">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
+                <CardTitle className="flex items-center gap-2 text-lg text-glow-primary">
                     <TrendingUp className="text-primary" />
                     Overall Credibility Score
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
-                    <Progress value={score * 100} className={`h-3 ${colorClasses[scoreColor].progress}`} />
-                    <span className={`text-2xl font-bold font-mono ${colorClasses[scoreColor].text}`}>{`${Math.round(score * 100)}%`}</span>
+                    <Progress value={score * 100} className="h-3" indicatorClassName={scoreClasses.progressGlow} />
+                    <span className={`text-2xl font-bold font-mono ${scoreClasses.text} ${scoreClasses.glow}`}>{`${Math.round(score * 100)}%`}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
                     This score represents the AI's confidence in the article's credibility based on its content and source.
@@ -62,7 +63,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
 
       <Accordion type="multiple" defaultValue={['content-analysis', 'source-analysis']} className="w-full space-y-4">
         {contentAnalysis && (
-          <Card>
+          <Card className="border-primary/20">
             <AccordionItem value="content-analysis" className="border-b-0">
               <AccordionTrigger className="p-6 text-lg font-headline hover:no-underline">
                 <div className="flex items-center gap-3">
@@ -101,7 +102,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
         )}
 
         {sourceAnalysis && (
-          <Card>
+          <Card className="border-primary/20">
             <AccordionItem value="source-analysis" className="border-b-0">
               <AccordionTrigger className="p-6 text-lg font-headline hover:no-underline">
                 <div className="flex items-center gap-3">
@@ -114,7 +115,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
                     <div>
                       <h4 className="font-semibold text-sm mb-1">Reliability Score</h4>
                       <div className="flex items-center gap-2">
-                         <Progress value={sourceAnalysis.reliabilityScore * 100} className="h-2 [&>*]:bg-primary" />
+                         <Progress value={sourceAnalysis.reliabilityScore * 100} className="h-2" indicatorClassName='progress-glow-primary' />
                          <span className="font-bold text-sm text-primary">{Math.round(sourceAnalysis.reliabilityScore * 100)}%</span>
                       </div>
                     </div>
@@ -138,9 +139,9 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
       </Accordion>
 
       {correctiveNews && correctiveNews.correctiveNewsLinks.length > 0 && (
-        <Card>
+        <Card className="border-accent/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
+            <CardTitle className="flex items-center gap-2 text-lg text-glow-accent">
                 <CheckCircle2 className="text-accent" />
                 Corrective Information
             </CardTitle>
@@ -159,7 +160,7 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
         </Card>
       )}
 
-      <Card>
+      <Card className="border-primary/20">
         <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm font-medium">Was this analysis helpful?</p>
             <div className="flex items-center gap-2">

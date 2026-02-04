@@ -33,7 +33,7 @@ export default function RootLayout({
                 alt={bgImage.description}
                 fill
                 sizes="100vw"
-                className="object-cover -z-10 opacity-20"
+                className="object-cover -z-10 opacity-30"
                 data-ai-hint={bgImage.imageHint}
             />
         )}

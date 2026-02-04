@@ -24,7 +24,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn("font-body antialiased min-h-screen")}>
-        <div className="relative flex min-h-screen flex-col">
+        <div
+            className="fixed inset-0 z-[-1] bg-cover bg-center"
+            style={{
+                backgroundImage: "url('https://storage.googleapis.com/project-123-files/user/e9b6a5f0-32b7-4c74-8777-7e6146051d14.png')",
+            }}
+        />
+        <div className="relative flex min-h-screen flex-col bg-background/70">
           <Header />
           <main className="flex-1">{children}</main>
         </div>

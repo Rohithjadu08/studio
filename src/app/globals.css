@@ -65,11 +65,7 @@
   }
   body {
     @apply text-foreground;
-    background-image: url('https://storage.googleapis.com/project-123-files/user/e9b6a5f0-32b7-4c74-8777-7e6146051d14.png');
     background-color: hsl(var(--background));
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
   }
 }
 

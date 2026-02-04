@@ -64,22 +64,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     background-image: url('https://storage.googleapis.com/project-123-files/user/e9b6a5f0-32b7-4c74-8777-7e6146051d14.png');
+    background-color: hsl(var(--background));
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: hsl(var(--background) / 0.5);
-    z-index: -1;
   }
 }
 

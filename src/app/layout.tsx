@@ -27,7 +27,7 @@ export default function RootLayout({
         <div
             className="fixed inset-0 z-[-1] bg-cover bg-center"
             style={{
-                backgroundImage: "url('https://storage.googleapis.com/project-123-files/user/e9b6a5f0-32b7-4c74-8777-7e6146051d14.png')",
+                backgroundImage: "url('https://storage.googleapis.com/project-123-files/user/53b89981-4475-4303-9d7a-350730b6b0c2.png')",
             }}
         />
         <div className="relative flex min-h-screen flex-col">

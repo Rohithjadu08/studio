@@ -58,7 +58,7 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8 md:py-12 px-4 md:px-6">
       <div className="max-w-3xl mx-auto">
-        <Card className="shadow-lg backdrop-blur-sm bg-card/50 border-primary/20">
+        <Card className="shadow-lg bg-transparent border-primary/20">
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-glow-primary text-3d">Fake News Detector</CardTitle>
             <CardDescription>Enter a news article URL or paste its content to analyze its credibility.</CardDescription>

@@ -40,11 +40,12 @@ export async function generateFactCheckingReport(
 const prompt = ai.definePrompt({
   name: 'generateFactCheckingReportPrompt',
   input: {schema: GenerateFactCheckingReportInputSchema},
-  output: {schema: GenerateFactCheckingReportOutputSchema},
   prompt: `You are an expert fact-checker. Analyze the following news article and generate a detailed report highlighting any false or misleading information. Be specific and provide evidence for your claims.
 
 News Article:
-{{{newsArticle}}}`,
+{{{newsArticle}}}
+
+You MUST respond with a valid JSON object only, without any markdown formatting or other text.`,
 });
 
 const generateFactCheckingReportFlow = ai.defineFlow(
@@ -54,7 +55,15 @@ const generateFactCheckingReportFlow = ai.defineFlow(
     outputSchema: GenerateFactCheckingReportOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const response = await prompt(input);
+    const rawText = response.text;
+    try {
+      const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(jsonText);
+      return GenerateFactCheckingReportOutputSchema.parse(parsed);
+    } catch (e) {
+      console.error("Failed to parse JSON from model output:", { rawText, error: e });
+      throw new Error("The AI returned data in an unexpected format.");
+    }
   }
 );

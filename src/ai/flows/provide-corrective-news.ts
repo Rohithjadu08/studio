@@ -32,8 +32,12 @@ export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): 
 const prompt = ai.definePrompt({
   name: 'provideCorrectiveNewsPrompt',
   input: {schema: ProvideCorrectiveNewsInputSchema},
-  output: {schema: ProvideCorrectiveNewsOutputSchema},
-  prompt: `Given the following fake news article, provide links to articles that present accurate and verified information. Return the links in the format specified in the output schema.\n\nFake News:\n{{{fakeNews}}}`,
+  prompt: `Given the following fake news article, provide links to articles that present accurate and verified information.
+
+Fake News:
+{{{fakeNews}}}
+
+You MUST respond with a valid JSON object only, without any markdown formatting or other text. The JSON object should contain a single key "correctiveNewsLinks" which is an array of URL strings.`,
 });
 
 const provideCorrectiveNewsFlow = ai.defineFlow(
@@ -43,7 +47,15 @@ const provideCorrectiveNewsFlow = ai.defineFlow(
     outputSchema: ProvideCorrectiveNewsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const response = await prompt(input);
+    const rawText = response.text;
+    try {
+      const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(jsonText);
+      return ProvideCorrectiveNewsOutputSchema.parse(parsed);
+    } catch (e) {
+      console.error("Failed to parse JSON from model output:", { rawText, error: e });
+      throw new Error("The AI returned data in an unexpected format.");
+    }
   }
 );

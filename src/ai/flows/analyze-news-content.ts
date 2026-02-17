@@ -41,7 +41,6 @@ export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promis
 const analyzeNewsContentPrompt = ai.definePrompt({
   name: 'analyzeNewsContentPrompt',
   input: {schema: AnalyzeNewsContentInputSchema},
-  output: {schema: AnalyzeNewsContentOutputSchema},
   prompt: `You are an AI trained to detect fake news.  Analyze the following news article and identify any potential fake news indicators.
 
 Article Text: {{{articleText}}}
@@ -50,7 +49,7 @@ Provide a credibility score between 0 and 1. 1 is very credible, 0 is not credib
 List out the fake news indicators.
 Create a detailed fact-checking report.
 
-Output should be in JSON format.
+You MUST respond with a valid JSON object only, without any markdown formatting or other text.
 `,
 });
 
@@ -61,7 +60,15 @@ const analyzeNewsContentFlow = ai.defineFlow(
     outputSchema: AnalyzeNewsContentOutputSchema,
   },
   async input => {
-    const {output} = await analyzeNewsContentPrompt(input);
-    return output!;
+    const response = await analyzeNewsContentPrompt(input);
+    const rawText = response.text;
+    try {
+      const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(jsonText);
+      return AnalyzeNewsContentOutputSchema.parse(parsed);
+    } catch (e) {
+      console.error("Failed to parse JSON from model output:", { rawText, error: e });
+      throw new Error("The AI returned data in an unexpected format.");
+    }
   }
 );

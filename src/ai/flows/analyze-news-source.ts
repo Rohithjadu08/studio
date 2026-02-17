@@ -54,13 +54,14 @@ export async function analyzeNewsSource(
 const prompt = ai.definePrompt({
   name: 'analyzeNewsSourcePrompt',
   input: {schema: AnalyzeNewsSourceInputSchema},
-  output: {schema: AnalyzeNewsSourceOutputSchema},
   prompt: `You are an AI assistant that analyzes the reliability and potential bias of a news source.
 
   Analyze the following news source URL:
-  {{sourceUrl}}
+  {{{sourceUrl}}}
 
   Provide a reliability score between 0 and 1, an assessment of potential bias, ownership information, and the fact-checking reputation of the source.
+  
+  You MUST respond with a valid JSON object only, without any markdown formatting or other text.
   `,
 });
 
@@ -71,7 +72,15 @@ const analyzeNewsSourceFlow = ai.defineFlow(
     outputSchema: AnalyzeNewsSourceOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const response = await prompt(input);
+    const rawText = response.text;
+    try {
+      const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(jsonText);
+      return AnalyzeNewsSourceOutputSchema.parse(parsed);
+    } catch (e) {
+      console.error("Failed to parse JSON from model output:", { rawText, error: e });
+      throw new Error("The AI returned data in an unexpected format.");
+    }
   }
 );

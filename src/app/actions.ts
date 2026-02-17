@@ -20,6 +20,10 @@ async function fetchArticleContentFromUrl(url: string): Promise<string> {
 
 
 export async function getAnalysis(data: { articleText?: string; sourceUrl?: string }): Promise<AnalysisResult> {
+    if (!process.env.GEMINI_API_KEY) {
+        throw new Error("The GEMINI_API_KEY is not set. Please provide it in your project's environment variables to use the AI features.");
+    }
+    
     let { articleText, sourceUrl } = data;
 
     if (!articleText && !sourceUrl) {

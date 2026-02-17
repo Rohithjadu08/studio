@@ -14,6 +14,18 @@ This is a Next.js application built with Firebase Studio that acts as an AI-powe
 
 The main application logic is in `src/app/page.tsx`. The AI flows are located in `src/ai/flows/`.
 
+### Prerequisites
+
+To use the AI features, you must set up a `GEMINI_API_KEY` environment variable.
+
+1.  Obtain an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  Create a file named `.env` in the root of your project.
+3.  Add the following line to the `.env` file:
+    ```
+    GEMINI_API_KEY=YOUR_API_KEY
+    ```
+    Replace `YOUR_API_KEY` with the key you obtained.
+
 ### To run locally:
 
 1.  Install dependencies: `npm install`

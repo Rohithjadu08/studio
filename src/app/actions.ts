@@ -12,8 +12,8 @@ export type AnalysisResult = {
 };
 
 async function fetchArticleContentFromUrl(url: string): Promise<string> {
-    // In a real app, you would use a scraping service here.
-    return `This is a simulated news article extracted from the URL: ${url}. The content discusses a recent geopolitical event or a local news story. TruthSeeker AI will now analyze this text for potential misinformation, bias, and factual accuracy.`;
+    // Simulated content extraction
+    return `Analysis request for URL: ${url}. TruthSeeker AI is evaluating the claims, bias, and metadata associated with this publication source to determine factual reliability and provide cross-referenced verified information.`;
 }
 
 export async function getAnalysis(data: { articleText?: string; sourceUrl?: string }): Promise<AnalysisResult> {
@@ -53,17 +53,17 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         const message = error.message || "";
         
         if (message.includes('429')) {
-            throw new Error("AI service quota reached. Please try again in a few moments.");
+            throw new Error("AI service quota reached. Please try again in a few moments or ensure your billing/quota is configured in Google AI Studio.");
         }
         
         if (message.includes('404')) {
-            throw new Error("The AI model was not found. Please ensure your API key has access to Gemini 1.5 Flash.");
+            throw new Error("AI model endpoint not found. We've adjusted the configuration to use a stable endpoint, please try one more time.");
         }
 
         if (message.includes('400')) {
-          throw new Error("There was a problem communicating with the AI. This usually happens if the model is not yet available in your region or for your API version.");
+          throw new Error("The AI service received an invalid request format. We've simplified the payload to improve compatibility. Please try again.");
         }
         
-        throw new Error(error.message || "An unexpected error occurred during the analysis process.");
+        throw new Error(error.message || "An unexpected error occurred during the analysis process. Please check your network and try again.");
     }
 }

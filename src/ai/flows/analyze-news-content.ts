@@ -25,18 +25,28 @@ export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSc
 const analyzeNewsContentPrompt = ai.definePrompt({
   name: 'analyzeNewsContentPrompt',
   input: { schema: AnalyzeNewsContentInputSchema },
-  output: { schema: AnalyzeNewsContentOutputSchema },
   prompt: `You are an expert fact-checker. Analyze the following news article for credibility.
   
   Identify misinformation indicators (e.g., clickbait, logical fallacies, lack of sources) and provide a detailed report.
   
-  Article Text: {{{articleText}}}`,
+  Article Text: {{{articleText}}}
+
+  IMPORTANT: Return your response ONLY as a valid JSON object with the following fields:
+  - credibilityScore (number, 0 to 1)
+  - fakeNewsIndicators (array of strings)
+  - factCheckingReport (string)
+
+  Do not include markdown formatting or any other text.`,
 });
 
 export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
-  const { output } = await analyzeNewsContentPrompt(input);
-  if (!output) {
-    throw new Error("Failed to generate content analysis.");
+  const response = await analyzeNewsContentPrompt(input);
+  const rawText = response.text;
+  try {
+    const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(jsonText) as AnalyzeNewsContentOutput;
+  } catch (e) {
+    console.error("AI returned invalid JSON:", rawText);
+    throw new Error("The AI failed to provide a valid report. Please try again.");
   }
-  return output;
 }

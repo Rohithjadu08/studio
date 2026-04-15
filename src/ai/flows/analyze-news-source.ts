@@ -24,16 +24,27 @@ export type AnalyzeNewsSourceOutput = z.infer<typeof AnalyzeNewsSourceOutputSche
 const analyzeNewsSourcePrompt = ai.definePrompt({
   name: 'analyzeNewsSourcePrompt',
   input: { schema: AnalyzeNewsSourceInputSchema },
-  output: { schema: AnalyzeNewsSourceOutputSchema },
   prompt: `Analyze the following news source URL for its reliability, bias, and ownership.
   
-  URL: {{{sourceUrl}}}`,
+  URL: {{{sourceUrl}}}
+
+  IMPORTANT: Return your response ONLY as a valid JSON object with the following fields:
+  - reliabilityScore (number, 0 to 1)
+  - biasAssessment (string)
+  - ownershipInformation (string)
+  - factCheckingReputation (string)
+
+  Do not include markdown formatting or any other text.`,
 });
 
 export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<AnalyzeNewsSourceOutput> {
-  const { output } = await analyzeNewsSourcePrompt(input);
-  if (!output) {
-    throw new Error("Failed to generate source analysis.");
+  const response = await analyzeNewsSourcePrompt(input);
+  const rawText = response.text;
+  try {
+    const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(jsonText) as AnalyzeNewsSourceOutput;
+  } catch (e) {
+    console.error("AI returned invalid JSON for source:", rawText);
+    throw new Error("The AI failed to analyze the source. Please try again.");
   }
-  return output;
 }

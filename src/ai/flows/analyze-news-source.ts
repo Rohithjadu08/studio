@@ -43,11 +43,12 @@ export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<
   const rawText = response.text;
   
   try {
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     return JSON.parse(jsonMatch[0]) as AnalyzeNewsSourceOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for source:", rawText);
-    throw new Error("Failed to analyze news source. Please try again.");
+    throw new Error("Failed to analyze news source. The AI response was not in the expected format.");
   }
 }

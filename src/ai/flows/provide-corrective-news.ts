@@ -37,11 +37,12 @@ export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): 
   const rawText = response.text;
   
   try {
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     return JSON.parse(jsonMatch[0]) as ProvideCorrectiveNewsOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for news links:", rawText);
-    throw new Error("Failed to find corrective news links. Please try again.");
+    throw new Error("Failed to find corrective news links. The AI response was not in the expected format.");
   }
 }

@@ -1,10 +1,7 @@
 
 import type { NextConfig } from "next";
 
-const nextConfig: any = {
-  experimental: {
-    allowedDevOrigins: ["https://*.cloudworkstations.dev"],
-  },
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'placehold.co' },

@@ -11,11 +11,6 @@ export type AnalysisResult = {
     correctiveNews: ProvideCorrectiveNewsOutput | null;
 };
 
-/**
- * Placeholder for URL content fetching.
- * In a real app, you might use a library like 'cheerio' or 'puppeteer' 
- * on the server to scrape the URL content.
- */
 async function fetchArticleContentFromUrl(url: string): Promise<string> {
     return `Analysis request for URL: ${url}. TruthSeeker AI is evaluating the claims, bias, and metadata associated with this publication source to determine factual reliability.`;
 }
@@ -31,7 +26,6 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         throw new Error("Please provide either an article URL or paste the content text.");
     }
 
-    // If only a URL is provided, simulate fetching content
     if (sourceUrl && !articleText) {
         articleText = await fetchArticleContentFromUrl(sourceUrl);
     }
@@ -57,7 +51,6 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         
         const message = error.message || "";
         
-        // Surface quota and model errors more clearly
         if (message.includes('429')) {
             throw new Error("AI quota reached. Please wait a moment before trying again.");
         }

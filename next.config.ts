@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'storage.googleapis.com' }
     ],
   },
+  experimental: {
+    // serverActions: {
+    //   allowedOrigins: ["*.cloudworkstations.dev"]
+    // }
+  }
 };
 
 export default nextConfig;

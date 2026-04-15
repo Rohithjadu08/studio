@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: any = {
   experimental: {
+    // We use any to bypass strict type checking for experimental flags that might trip up the validator
     allowedDevOrigins: ["https://*.cloudworkstations.dev"],
   },
   images: {

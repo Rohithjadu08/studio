@@ -42,10 +42,12 @@ const analyzeNewsSourcePrompt = ai.definePrompt({
 export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<AnalyzeNewsSourceOutput> {
   const response = await analyzeNewsSourcePrompt(input);
   const rawText = response.text;
+  
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not find JSON in response");
-    return JSON.parse(jsonMatch[0]) as AnalyzeNewsSourceOutput;
+    const parsed = JSON.parse(jsonMatch[0]);
+    return parsed as AnalyzeNewsSourceOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for source:", rawText);
     throw new Error("The AI failed to analyze the source. Please try again.");

@@ -44,10 +44,13 @@ const analyzeNewsContentPrompt = ai.definePrompt({
 export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
   const response = await analyzeNewsContentPrompt(input);
   const rawText = response.text;
+  
   try {
+    // Robust parsing that handles potential markdown wrappers or extra whitespace
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not find JSON in response");
-    return JSON.parse(jsonMatch[0]) as AnalyzeNewsContentOutput;
+    const parsed = JSON.parse(jsonMatch[0]);
+    return parsed as AnalyzeNewsContentOutput;
   } catch (e) {
     console.error("AI returned invalid JSON:", rawText);
     throw new Error("The AI failed to provide a valid report. Please try again.");

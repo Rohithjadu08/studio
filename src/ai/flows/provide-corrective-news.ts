@@ -36,10 +36,12 @@ const provideCorrectiveNewsPrompt = ai.definePrompt({
 export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): Promise<ProvideCorrectiveNewsOutput> {
   const response = await provideCorrectiveNewsPrompt(input);
   const rawText = response.text;
+  
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not find JSON in response");
-    return JSON.parse(jsonMatch[0]) as ProvideCorrectiveNewsOutput;
+    const parsed = JSON.parse(jsonMatch[0]);
+    return parsed as ProvideCorrectiveNewsOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for news links:", rawText);
     throw new Error("The AI failed to find corrective news. Please try again.");

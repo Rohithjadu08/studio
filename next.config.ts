@@ -11,9 +11,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    // serverActions: {
-    //   allowedOrigins: ["*.cloudworkstations.dev"]
-    // }
+    // Keep experimental section clean to avoid unrecognized key errors
   }
 };
 

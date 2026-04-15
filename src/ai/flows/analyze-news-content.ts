@@ -15,9 +15,9 @@ const AnalyzeNewsContentInputSchema = z.object({
 export type AnalyzeNewsContentInput = z.infer<typeof AnalyzeNewsContentInputSchema>;
 
 const AnalyzeNewsContentOutputSchema = z.object({
-  credibilityScore: z.number(),
-  fakeNewsIndicators: z.array(z.string()),
-  factCheckingReport: z.string(),
+  credibilityScore: z.number().describe('Score from 0.0 to 1.0 representing the credibility of the article.'),
+  fakeNewsIndicators: z.array(z.string()).describe('List of specific indicators of misinformation or fake news.'),
+  factCheckingReport: z.string().describe('A detailed text report explaining the analysis.'),
 });
 
 export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSchema>;
@@ -25,31 +25,18 @@ export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSc
 const analyzeNewsContentPrompt = ai.definePrompt({
   name: 'analyzeNewsContentPrompt',
   input: { schema: AnalyzeNewsContentInputSchema },
+  output: { schema: AnalyzeNewsContentOutputSchema },
   prompt: `You are an expert fact-checker. Analyze the following news article for credibility.
   
   Identify misinformation indicators (e.g., clickbait, logical fallacies, lack of sources) and provide a detailed report.
   
-  Article Text: {{{articleText}}}
-
-  IMPORTANT: Return your response ONLY as a raw JSON object.
-  Expected JSON structure:
-  {
-    "credibilityScore": number (0.0 to 1.0),
-    "fakeNewsIndicators": ["indicator 1", "indicator 2"],
-    "factCheckingReport": "Detailed text report here"
-  }`,
+  Article Text: {{{articleText}}}`,
 });
 
 export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
-  const response = await analyzeNewsContentPrompt(input);
-  const rawText = response.text;
-  
-  try {
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON found in AI response");
-    return JSON.parse(jsonMatch[0]) as AnalyzeNewsContentOutput;
-  } catch (e) {
-    console.error("AI Analysis Parse Error:", rawText);
-    throw new Error("Failed to parse analysis report. The AI response was not in the expected format.");
+  const { output } = await analyzeNewsContentPrompt(input);
+  if (!output) {
+    throw new Error("AI failed to generate a content analysis report.");
   }
+  return output;
 }

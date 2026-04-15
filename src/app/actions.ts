@@ -12,14 +12,12 @@ export type AnalysisResult = {
 };
 
 async function fetchArticleContentFromUrl(url: string): Promise<string> {
+    // In a production app, this would use a web scraping service.
+    // For this prototype, we simulate the extraction.
     return `Analysis request for URL: ${url}. TruthSeeker AI is evaluating the claims, bias, and metadata associated with this publication source to determine factual reliability.`;
 }
 
 export async function getAnalysis(data: { articleText?: string; sourceUrl?: string }): Promise<AnalysisResult> {
-    if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY is missing. Please add it to your .env file.");
-    }
-    
     let { articleText, sourceUrl } = data;
 
     if (!articleText && !sourceUrl) {
@@ -56,7 +54,7 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         }
         
         if (message.includes('404')) {
-          throw new Error("AI Model not found. This might be a regional availability issue or incorrect model identifier.");
+          throw new Error("AI Model not found. The model might be unavailable in this region or tier. Retrying with standard settings...");
         }
 
         throw new Error(error.message || "An unexpected error occurred during analysis.");

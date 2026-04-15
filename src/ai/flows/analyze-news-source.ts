@@ -43,8 +43,7 @@ export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<
   const rawText = response.text;
   
   try {
-    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     return JSON.parse(jsonMatch[0]) as AnalyzeNewsSourceOutput;
   } catch (e) {

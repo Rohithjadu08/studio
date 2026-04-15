@@ -37,8 +37,7 @@ export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): 
   const rawText = response.text;
   
   try {
-    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     return JSON.parse(jsonMatch[0]) as ProvideCorrectiveNewsOutput;
   } catch (e) {

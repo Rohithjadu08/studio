@@ -31,7 +31,7 @@ const analyzeNewsContentPrompt = ai.definePrompt({
   
   Article Text: {{{articleText}}}
 
-  IMPORTANT: Return your response ONLY as a raw JSON object. Do not include markdown code blocks.
+  IMPORTANT: Return your response ONLY as a raw JSON object. Do not include markdown code blocks like \`\`\`json.
   Expected JSON structure:
   {
     "credibilityScore": number (0.0 to 1.0),
@@ -45,6 +45,7 @@ export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promis
   const rawText = response.text;
   
   try {
+    // Robust cleaning: remove markdown code blocks and whitespace
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("No JSON found in response");
     const cleanJson = jsonMatch[0].trim();

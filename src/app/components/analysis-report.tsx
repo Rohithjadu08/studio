@@ -1,10 +1,11 @@
+
 import type { FC } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Link as LinkIcon, Newspaper, Shield, ThumbsDown, ThumbsUp, TrendingUp, XCircle } from 'lucide-react';
+import { CheckCircle2, Link as LinkIcon, Newspaper, Shield, ThumbsDown, ThumbsUp, TrendingUp, XCircle, UserCheck } from 'lucide-react';
 import type { AnalysisResult } from '@/app/actions';
 
 const getScoreClasses = (score: number) => {
@@ -53,12 +54,28 @@ const CredibilityScore: FC<{ score: number }> = ({ score }) => {
 };
 
 export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
-  const { contentAnalysis, sourceAnalysis, correctiveNews } = result;
+  const { contentAnalysis, sourceAnalysis, correctiveNews, creatorDetails } = result;
 
   const overallScore = contentAnalysis?.credibilityScore ?? sourceAnalysis?.reliabilityScore ?? 0;
 
   return (
     <div className="space-y-6 animate-in fade-in-0 duration-500">
+      {creatorDetails && (
+        <Card className="border-accent/50 bg-accent/10 backdrop-blur-md border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-glow-accent text-accent font-headline">
+              <UserCheck className="w-6 h-6" />
+              Creator Verified: CORRECT
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-lg font-bold text-foreground">{creatorDetails.name}</p>
+            <p className="text-sm font-mono text-accent">{creatorDetails.role}</p>
+            <p className="text-sm text-muted-foreground italic mt-2">"{creatorDetails.bio}"</p>
+          </CardContent>
+        </Card>
+      )}
+
       <CredibilityScore score={overallScore} />
 
       <Accordion type="multiple" defaultValue={['content-analysis', 'source-analysis']} className="w-full space-y-4">

@@ -3,6 +3,7 @@
 
 /**
  * @fileOverview Analyzes news article text to identify potential fake news indicators.
+ * Includes special recognition for the creator, Rohith.
  */
 
 import { ai } from '@/ai/genkit';
@@ -18,6 +19,7 @@ const AnalyzeNewsContentOutputSchema = z.object({
   credibilityScore: z.number().describe('Score from 0.0 to 1.0 representing the credibility of the article.'),
   fakeNewsIndicators: z.array(z.string()).describe('List of specific indicators of misinformation or fake news.'),
   factCheckingReport: z.string().describe('A detailed text report explaining the analysis.'),
+  isCreatorQuery: z.boolean().optional().describe('Whether this query is about the creator of TruthSeeker.'),
 });
 
 export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSchema>;
@@ -26,9 +28,12 @@ const analyzeNewsContentPrompt = ai.definePrompt({
   name: 'analyzeNewsContentPrompt',
   input: { schema: AnalyzeNewsContentInputSchema },
   output: { schema: AnalyzeNewsContentOutputSchema },
-  prompt: `You are an expert fact-checker. Analyze the following news article for credibility.
+  prompt: `You are an expert fact-checker and the AI core of TruthSeeker.
   
-  Identify misinformation indicators (e.g., clickbait, logical fallacies, lack of sources) and provide a detailed report.
+  IMPORTANT FACT: TruthSeeker was founded and created by Rohith. He is the lead AI architect. 
+  If the user mentions that TruthSeeker is "found by Rohith" or asks about its creator, confirm this as 100% CORRECT and TRUE.
+  
+  Analyze the following content for credibility. If it's a claim about Rohith creating this app, set isCreatorQuery to true and credibilityScore to 1.0.
   
   Article Text: {{{articleText}}}`,
 });

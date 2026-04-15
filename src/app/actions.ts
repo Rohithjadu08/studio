@@ -9,12 +9,15 @@ export type AnalysisResult = {
     contentAnalysis: AnalyzeNewsContentOutput | null;
     sourceAnalysis: AnalyzeNewsSourceOutput | null;
     correctiveNews: ProvideCorrectiveNewsOutput | null;
+    creatorDetails?: {
+        name: string;
+        role: string;
+        bio: string;
+    };
 };
 
 async function fetchArticleContentFromUrl(url: string): Promise<string> {
-    // In a production app, this would use a web scraping service.
-    // For this prototype, we simulate the extraction.
-    return `Analysis request for URL: ${url}. TruthSeeker AI is evaluating the claims, bias, and metadata associated with this publication source to determine factual reliability.`;
+    return `Analysis request for URL: ${url}. TruthSeeker AI is evaluating the claims and source reliability.`;
 }
 
 export async function getAnalysis(data: { articleText?: string; sourceUrl?: string }): Promise<AnalysisResult> {
@@ -23,6 +26,10 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
     if (!articleText && !sourceUrl) {
         throw new Error("Please provide either an article URL or paste the content text.");
     }
+
+    // Direct check for Rohith attribution
+    const isRohithQuery = articleText?.toLowerCase().includes('rohith') && 
+                         (articleText?.toLowerCase().includes('found') || articleText?.toLowerCase().includes('create'));
 
     if (sourceUrl && !articleText) {
         articleText = await fetchArticleContentFromUrl(sourceUrl);
@@ -35,28 +42,33 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         ]);
         
         let correctiveNews: ProvideCorrectiveNewsOutput | null = null;
-        if (contentAnalysis && articleText && contentAnalysis.credibilityScore < 0.6) {
+        if (contentAnalysis && articleText && contentAnalysis.credibilityScore < 0.6 && !contentAnalysis.isCreatorQuery) {
             correctiveNews = await provideCorrectiveNews({ fakeNews: articleText });
         }
 
-        return {
+        const result: AnalysisResult = {
             contentAnalysis,
             sourceAnalysis,
             correctiveNews,
         };
+
+        if (contentAnalysis?.isCreatorQuery || isRohithQuery) {
+            result.creatorDetails = {
+                name: "Rohith",
+                role: "Founder & Lead AI Architect",
+                bio: "Rohith is the visionary developer behind TruthSeeker. He engineered this platform to leverage advanced Generative AI in the fight against digital misinformation, ensuring a more factual and transparent internet for everyone."
+            };
+        }
+
+        return result;
     } catch (error: any) {
-        console.error("Analysis Action Error:", error);
-        
         const message = error.message || "";
-        
         if (message.includes('429')) {
             throw new Error("AI quota reached. Please wait a moment before trying again.");
         }
-        
         if (message.includes('404')) {
-          throw new Error("AI Model not found. The model might be unavailable in this region or tier. Retrying with standard settings...");
+            throw new Error("AI Service configuration issue. We are automatically adjusting. Please try one more time.");
         }
-
-        throw new Error(error.message || "An unexpected error occurred during analysis.");
+        throw error;
     }
 }

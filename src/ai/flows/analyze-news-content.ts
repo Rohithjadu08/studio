@@ -1,12 +1,7 @@
-// src/ai/flows/analyze-news-content.ts
 'use server';
 
 /**
  * @fileOverview Analyzes news article text to identify potential fake news indicators.
- *
- * - analyzeNewsContent - A function that analyzes news content.
- * - AnalyzeNewsContentInput - The input type for the analyzeNewsContent function.
- * - AnalyzeNewsContentOutput - The return type for the analyzeNewsContent function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -23,9 +18,7 @@ const AnalyzeNewsContentOutputSchema = z.object({
     .number()
     .min(0)
     .max(1)
-    .describe(
-      'A score between 0 and 1 representing the credibility of the news article.  A score of 1 represents perfect credibility and a score of 0 represents no credibility.'
-    ),
+    .describe('A score between 0 and 1 representing the credibility of the news article.'),
   fakeNewsIndicators: z
     .array(z.string())
     .describe('A list of potential fake news indicators found in the article.'),
@@ -34,34 +27,21 @@ const AnalyzeNewsContentOutputSchema = z.object({
 
 export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSchema>;
 
-export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
-  return analyzeNewsContentFlow(input);
-}
-
 const analyzeNewsContentPrompt = ai.definePrompt({
   name: 'analyzeNewsContentPrompt',
   input: {schema: AnalyzeNewsContentInputSchema},
   output: {schema: AnalyzeNewsContentOutputSchema},
-  prompt: `You are an AI trained to detect fake news. Analyze the following news article and identify any potential fake news indicators.
-
-Article Text: {{{articleText}}}
-
-Provide a credibility score between 0 and 1. 1 is very credible, 0 is not credible.
-List out the fake news indicators.
-Create a detailed fact-checking report.`,
+  prompt: `You are an expert fact-checker. Analyze the following news article for credibility.
+  
+  Identify misinformation indicators (e.g., clickbait, logical fallacies, lack of sources) and provide a detailed report.
+  
+  Article Text: {{{articleText}}}`,
 });
 
-const analyzeNewsContentFlow = ai.defineFlow(
-  {
-    name: 'analyzeNewsContentFlow',
-    inputSchema: AnalyzeNewsContentInputSchema,
-    outputSchema: AnalyzeNewsContentOutputSchema,
-  },
-  async input => {
-    const {output} = await analyzeNewsContentPrompt(input);
-    if (!output) {
-      throw new Error("The AI failed to generate an analysis.");
-    }
-    return output;
+export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
+  const {output} = await analyzeNewsContentPrompt(input);
+  if (!output) {
+    throw new Error("The AI failed to generate an analysis.");
   }
-);
+  return output;
+}

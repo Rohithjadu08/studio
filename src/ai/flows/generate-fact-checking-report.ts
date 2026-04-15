@@ -1,63 +1,45 @@
 'use server';
 
 /**
- * @fileOverview Generates a detailed fact-checking report for a news article, highlighting any false or misleading information.
- *
- * - generateFactCheckingReport - A function that generates the fact-checking report.
- * - GenerateFactCheckingReportInput - The input type for the generateFactCheckingReport function.
- * - GenerateFactCheckingReportOutput - The return type for the generateFactCheckingReport function.
+ * @fileOverview Generates a detailed fact-checking report for a news article.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateFactCheckingReportInputSchema = z.object({
-  newsArticle: z
-    .string()
-    .describe('The news article content to be analyzed for fact-checking.'),
+  newsArticle: z.string().describe('The news article content to be analyzed.'),
 });
-export type GenerateFactCheckingReportInput = z.infer<
-  typeof GenerateFactCheckingReportInputSchema
->;
+export type GenerateFactCheckingReportInput = z.infer<typeof GenerateFactCheckingReportInputSchema>;
 
 const GenerateFactCheckingReportOutputSchema = z.object({
-  factCheckingReport: z
-    .string()
-    .describe(
-      'A detailed report highlighting any false or misleading information found in the news article.'
-    ),
+  factCheckingReport: z.string(),
 });
-export type GenerateFactCheckingReportOutput = z.infer<
-  typeof GenerateFactCheckingReportOutputSchema
->;
-
-export async function generateFactCheckingReport(
-  input: GenerateFactCheckingReportInput
-): Promise<GenerateFactCheckingReportOutput> {
-  return generateFactCheckingReportFlow(input);
-}
+export type GenerateFactCheckingReportOutput = z.infer<typeof GenerateFactCheckingReportOutputSchema>;
 
 const generateFactCheckingReportPrompt = ai.definePrompt({
   name: 'generateFactCheckingReportPrompt',
   input: {schema: GenerateFactCheckingReportInputSchema},
-  output: {schema: GenerateFactCheckingReportOutputSchema},
-  prompt: `You are an expert fact-checker. Analyze the following news article and generate a detailed report highlighting any false or misleading information. Be specific and provide evidence for your claims.
+  prompt: `You are an expert fact-checker. Analyze the following news article and generate a detailed report highlighting any false or misleading information. 
 
 News Article:
-{{{newsArticle}}}`,
+{{{newsArticle}}}
+
+IMPORTANT: Return your report ONLY as a valid JSON object with the key:
+- factCheckingReport (string)
+
+Do not include any other text or markdown outside of the JSON.`,
 });
 
-const generateFactCheckingReportFlow = ai.defineFlow(
-  {
-    name: 'generateFactCheckingReportFlow',
-    inputSchema: GenerateFactCheckingReportInputSchema,
-    outputSchema: GenerateFactCheckingReportOutputSchema,
-  },
-  async input => {
-    const {output} = await generateFactCheckingReportPrompt(input);
-    if (!output) {
-      throw new Error("The AI failed to generate a fact-checking report.");
-    }
-    return output;
+export async function generateFactCheckingReport(input: GenerateFactCheckingReportInput): Promise<GenerateFactCheckingReportOutput> {
+  const response = await generateFactCheckingReportPrompt(input);
+  const rawText = response.text;
+  
+  try {
+    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleanJson) as GenerateFactCheckingReportOutput;
+  } catch (e) {
+    console.error("Failed to parse AI response as JSON:", rawText);
+    throw new Error("The AI provided an invalid report format.");
   }
-);
+}

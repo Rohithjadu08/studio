@@ -14,15 +14,9 @@ const AnalyzeNewsContentInputSchema = z.object({
 export type AnalyzeNewsContentInput = z.infer<typeof AnalyzeNewsContentInputSchema>;
 
 const AnalyzeNewsContentOutputSchema = z.object({
-  credibilityScore: z
-    .number()
-    .min(0)
-    .max(1)
-    .describe('A score between 0 and 1 representing the credibility of the news article.'),
-  fakeNewsIndicators: z
-    .array(z.string())
-    .describe('A list of potential fake news indicators found in the article.'),
-  factCheckingReport: z.string().describe('A detailed fact-checking report of the article.'),
+  credibilityScore: z.number(),
+  fakeNewsIndicators: z.array(z.string()),
+  factCheckingReport: z.string(),
 });
 
 export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSchema>;
@@ -30,18 +24,30 @@ export type AnalyzeNewsContentOutput = z.infer<typeof AnalyzeNewsContentOutputSc
 const analyzeNewsContentPrompt = ai.definePrompt({
   name: 'analyzeNewsContentPrompt',
   input: {schema: AnalyzeNewsContentInputSchema},
-  output: {schema: AnalyzeNewsContentOutputSchema},
   prompt: `You are an expert fact-checker. Analyze the following news article for credibility.
   
   Identify misinformation indicators (e.g., clickbait, logical fallacies, lack of sources) and provide a detailed report.
   
-  Article Text: {{{articleText}}}`,
+  Article Text: {{{articleText}}}
+  
+  IMPORTANT: Return your analysis ONLY as a valid JSON object with the following keys:
+  - credibilityScore (number between 0 and 1)
+  - fakeNewsIndicators (array of strings)
+  - factCheckingReport (detailed string)
+  
+  Do not include any other text or markdown outside of the JSON.`,
 });
 
 export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
-  const {output} = await analyzeNewsContentPrompt(input);
-  if (!output) {
-    throw new Error("The AI failed to generate an analysis.");
+  const response = await analyzeNewsContentPrompt(input);
+  const rawText = response.text;
+  
+  try {
+    // Strip markdown code blocks if present
+    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleanJson) as AnalyzeNewsContentOutput;
+  } catch (e) {
+    console.error("Failed to parse AI response as JSON:", rawText);
+    throw new Error("The AI provided an invalid response format. Please try again.");
   }
-  return output;
 }

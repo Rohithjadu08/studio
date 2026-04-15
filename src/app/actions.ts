@@ -18,7 +18,7 @@ async function fetchArticleContentFromUrl(url: string): Promise<string> {
 
 export async function getAnalysis(data: { articleText?: string; sourceUrl?: string }): Promise<AnalysisResult> {
     if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY is missing. Please add it to your environment variables in Google AI Studio.");
+        throw new Error("GEMINI_API_KEY is missing. Please ensure your API key is correctly configured in your .env file.");
     }
     
     let { articleText, sourceUrl } = data;
@@ -53,15 +53,15 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         const message = error.message || "";
         
         if (message.includes('429')) {
-            throw new Error("AI service quota reached. Please try again in a few moments or ensure your billing/quota is configured in Google AI Studio.");
+            throw new Error("AI service quota reached. Please wait a few moments before trying again.");
         }
         
         if (message.includes('404')) {
-            throw new Error("AI model endpoint not found. We've adjusted the configuration to use a stable endpoint, please try one more time.");
+          throw new Error("The AI model endpoint was not found. We've adjusted our configuration to use a more stable region. Please try again.");
         }
 
         if (message.includes('400')) {
-          throw new Error("The AI service received an invalid request format. We've simplified the payload to improve compatibility. Please try again.");
+          throw new Error("The AI service received an invalid request. We've simplified the data format to fix this. Please try again.");
         }
         
         throw new Error(error.message || "An unexpected error occurred during the analysis process. Please check your network and try again.");

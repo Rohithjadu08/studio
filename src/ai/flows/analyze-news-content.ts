@@ -31,20 +31,23 @@ const analyzeNewsContentPrompt = ai.definePrompt({
   
   Article Text: {{{articleText}}}
 
-  IMPORTANT: Return your response ONLY as a valid JSON object with the following fields:
-  - credibilityScore (number, 0 to 1)
-  - fakeNewsIndicators (array of strings)
-  - factCheckingReport (string)
+  IMPORTANT: Return your response ONLY as a raw JSON object with these fields:
+  {
+    "credibilityScore": number (0 to 1),
+    "fakeNewsIndicators": string[],
+    "factCheckingReport": string
+  }
 
-  Do not include markdown formatting or any other text.`,
+  Do not include markdown blocks or any other text.`,
 });
 
 export async function analyzeNewsContent(input: AnalyzeNewsContentInput): Promise<AnalyzeNewsContentOutput> {
   const response = await analyzeNewsContentPrompt(input);
   const rawText = response.text;
   try {
-    const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(jsonText) as AnalyzeNewsContentOutput;
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Could not find JSON in response");
+    return JSON.parse(jsonMatch[0]) as AnalyzeNewsContentOutput;
   } catch (e) {
     console.error("AI returned invalid JSON:", rawText);
     throw new Error("The AI failed to provide a valid report. Please try again.");

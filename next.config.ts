@@ -1,10 +1,10 @@
 
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig: any = {
   experimental: {
     allowedDevOrigins: ["https://*.cloudworkstations.dev"],
-  } as any,
+  },
   images: {
     remotePatterns: [
       {

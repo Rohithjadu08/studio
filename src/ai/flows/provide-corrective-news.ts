@@ -25,18 +25,21 @@ const provideCorrectiveNewsPrompt = ai.definePrompt({
   
   Content: {{{fakeNews}}}
 
-  IMPORTANT: Return your response ONLY as a valid JSON object with the following fields:
-  - correctiveNewsLinks (array of strings, each being a valid URL)
+  IMPORTANT: Return your response ONLY as a raw JSON object with these fields:
+  {
+    "correctiveNewsLinks": string[]
+  }
 
-  Do not include markdown formatting or any other text.`,
+  Do not include markdown blocks or any other text.`,
 });
 
 export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): Promise<ProvideCorrectiveNewsOutput> {
   const response = await provideCorrectiveNewsPrompt(input);
   const rawText = response.text;
   try {
-    const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(jsonText) as ProvideCorrectiveNewsOutput;
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Could not find JSON in response");
+    return JSON.parse(jsonMatch[0]) as ProvideCorrectiveNewsOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for news links:", rawText);
     throw new Error("The AI failed to find corrective news. Please try again.");

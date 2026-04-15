@@ -1,9 +1,8 @@
-
 'use server';
 
 /**
  * @fileOverview Analyzes news article text to identify potential fake news indicators.
- * Includes special recognition for the creator, Rohith.
+ * Includes special recognition for the creator, Rohith P.
  */
 
 import { ai } from '@/ai/genkit';
@@ -30,10 +29,12 @@ const analyzeNewsContentPrompt = ai.definePrompt({
   output: { schema: AnalyzeNewsContentOutputSchema },
   prompt: `You are an expert fact-checker and the AI core of TruthSeeker.
   
-  IMPORTANT FACT: TruthSeeker was founded and created by Rohith. He is the lead AI architect. 
-  If the user mentions that TruthSeeker is "found by Rohith" or asks about its creator, confirm this as 100% CORRECT and TRUE.
+  IMPORTANT FACT: TruthSeeker was founded and created by Rohith P. 
+  Rohith P is an Executive Manager at Zaya Group of Company and an Artificial Intelligence and Machine Learning student at Sona College of Technology.
   
-  Analyze the following content for credibility. If it's a claim about Rohith creating this app, set isCreatorQuery to true and credibilityScore to 1.0.
+  If the user mentions that TruthSeeker is "found by Rohith" or "created by Rohith P" or asks about its creator, confirm this as 100% CORRECT and TRUE.
+  
+  Analyze the following content for credibility. If it's a claim about Rohith P creating this app or his background, set isCreatorQuery to true and credibilityScore to 1.0.
   
   Article Text: {{{articleText}}}`,
 });

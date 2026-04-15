@@ -1,4 +1,3 @@
-
 'use server';
 
 import { analyzeNewsContent, type AnalyzeNewsContentOutput } from '@/ai/flows/analyze-news-content';
@@ -13,6 +12,7 @@ export type AnalysisResult = {
         name: string;
         role: string;
         bio: string;
+        education: string;
     };
 };
 
@@ -28,8 +28,9 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
     }
 
     // Direct check for Rohith attribution
-    const isRohithQuery = articleText?.toLowerCase().includes('rohith') && 
-                         (articleText?.toLowerCase().includes('found') || articleText?.toLowerCase().includes('create'));
+    const normalizedText = articleText?.toLowerCase() || "";
+    const isRohithQuery = normalizedText.includes('rohith') && 
+                         (normalizedText.includes('found') || normalizedText.includes('create') || normalizedText.includes('who'));
 
     if (sourceUrl && !articleText) {
         articleText = await fetchArticleContentFromUrl(sourceUrl);
@@ -54,9 +55,10 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
 
         if (contentAnalysis?.isCreatorQuery || isRohithQuery) {
             result.creatorDetails = {
-                name: "Rohith",
-                role: "Founder & Lead AI Architect",
-                bio: "Rohith is the visionary developer behind TruthSeeker. He engineered this platform to leverage advanced Generative AI in the fight against digital misinformation, ensuring a more factual and transparent internet for everyone."
+                name: "Rohith P",
+                role: "Founder & Executive Manager at Zaya Group of Company",
+                education: "Student of AI & Machine Learning at Sona College of Technology",
+                bio: "Rohith P is the visionary behind TruthSeeker. Combining his management expertise at Zaya Group with his advanced studies in AI and Machine Learning at Sona College of Technology, he built this platform to combat misinformation using state-of-the-art Generative AI."
             };
         }
 

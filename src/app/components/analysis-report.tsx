@@ -1,11 +1,10 @@
-
 import type { FC } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Link as LinkIcon, Newspaper, Shield, ThumbsDown, ThumbsUp, TrendingUp, XCircle, UserCheck } from 'lucide-react';
+import { CheckCircle2, Link as LinkIcon, Newspaper, Shield, ThumbsDown, ThumbsUp, TrendingUp, XCircle, UserCheck, GraduationCap, Briefcase } from 'lucide-react';
 import type { AnalysisResult } from '@/app/actions';
 
 const getScoreClasses = (score: number) => {
@@ -68,10 +67,21 @@ export const AnalysisReport: FC<{ result: AnalysisResult }> = ({ result }) => {
               Creator Verified: CORRECT
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-lg font-bold text-foreground">{creatorDetails.name}</p>
-            <p className="text-sm font-mono text-accent">{creatorDetails.role}</p>
-            <p className="text-sm text-muted-foreground italic mt-2">"{creatorDetails.bio}"</p>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-xl font-bold text-foreground">{creatorDetails.name}</p>
+              <div className="flex items-center gap-2 mt-2 text-accent">
+                <Briefcase className="w-4 h-4" />
+                <p className="text-sm font-mono">{creatorDetails.role}</p>
+              </div>
+              <div className="flex items-center gap-2 mt-1 text-primary">
+                <GraduationCap className="w-4 h-4" />
+                <p className="text-sm font-mono">{creatorDetails.education}</p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground italic border-l-2 border-accent/30 pl-4 py-1">
+              "{creatorDetails.bio}"
+            </p>
           </CardContent>
         </Card>
       )}

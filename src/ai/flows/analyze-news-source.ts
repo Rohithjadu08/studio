@@ -28,7 +28,7 @@ const analyzeNewsSourcePrompt = ai.definePrompt({
   
   URL: {{{sourceUrl}}}
 
-  IMPORTANT: Return your response ONLY as a raw JSON object. Do not include markdown code blocks.
+  IMPORTANT: Return your response ONLY as a raw JSON object.
   Expected JSON structure:
   {
     "reliabilityScore": number (0.0 to 1.0),
@@ -44,10 +44,10 @@ export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<
   
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("No JSON found in response");
+    if (!jsonMatch) throw new Error("No JSON found in AI response");
     return JSON.parse(jsonMatch[0]) as AnalyzeNewsSourceOutput;
   } catch (e) {
-    console.error("AI returned invalid JSON for source:", rawText);
+    console.error("AI Source Analysis Parse Error:", rawText);
     throw new Error("Failed to analyze news source. The AI response was not in the expected format.");
   }
 }

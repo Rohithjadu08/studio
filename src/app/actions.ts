@@ -56,7 +56,7 @@ export async function getAnalysis(data: { articleText?: string; sourceUrl?: stri
         }
         
         if (message.includes('404')) {
-          throw new Error("AI service temporarily unavailable. The system is adjusting configuration, please try one more time.");
+          throw new Error("AI Model not found. This might be a regional availability issue or incorrect model identifier.");
         }
 
         throw new Error(error.message || "An unexpected error occurred during analysis.");

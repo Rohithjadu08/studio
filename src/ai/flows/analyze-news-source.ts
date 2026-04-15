@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Analyzes the source of a news article to provide insights into its reliability and potential bias.
+ * @fileOverview Analyzes the source of a news article.
  */
 
 import { ai } from '@/ai/genkit';
@@ -28,15 +28,14 @@ const analyzeNewsSourcePrompt = ai.definePrompt({
   
   URL: {{{sourceUrl}}}
 
-  IMPORTANT: Return your response ONLY as a raw JSON object with these fields:
+  IMPORTANT: Return your response ONLY as a raw JSON object. Do not include markdown code blocks.
+  Expected JSON structure:
   {
-    "reliabilityScore": number (0 to 1),
-    "biasAssessment": string,
-    "ownershipInformation": string,
-    "factCheckingReputation": string
-  }
-
-  Do not include markdown blocks or any other text.`,
+    "reliabilityScore": number (0.0 to 1.0),
+    "biasAssessment": "string",
+    "ownershipInformation": "string",
+    "factCheckingReputation": "string"
+  }`,
 });
 
 export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<AnalyzeNewsSourceOutput> {
@@ -45,11 +44,10 @@ export async function analyzeNewsSource(input: AnalyzeNewsSourceInput): Promise<
   
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Could not find JSON in response");
-    const parsed = JSON.parse(jsonMatch[0]);
-    return parsed as AnalyzeNewsSourceOutput;
+    if (!jsonMatch) throw new Error("No JSON found in response");
+    return JSON.parse(jsonMatch[0]) as AnalyzeNewsSourceOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for source:", rawText);
-    throw new Error("The AI failed to analyze the source. Please try again.");
+    throw new Error("Failed to analyze news source. Please try again.");
   }
 }

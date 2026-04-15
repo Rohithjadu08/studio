@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview This file contains the Genkit flow for providing corrective news.
+ * @fileOverview Provides corrective news links.
  */
 
 import { ai } from '@/ai/genkit';
@@ -25,12 +25,11 @@ const provideCorrectiveNewsPrompt = ai.definePrompt({
   
   Content: {{{fakeNews}}}
 
-  IMPORTANT: Return your response ONLY as a raw JSON object with these fields:
+  IMPORTANT: Return your response ONLY as a raw JSON object. Do not include markdown code blocks.
+  Expected JSON structure:
   {
-    "correctiveNewsLinks": string[]
-  }
-
-  Do not include markdown blocks or any other text.`,
+    "correctiveNewsLinks": ["https://url1.com", "https://url2.com"]
+  }`,
 });
 
 export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): Promise<ProvideCorrectiveNewsOutput> {
@@ -39,11 +38,10 @@ export async function provideCorrectiveNews(input: ProvideCorrectiveNewsInput): 
   
   try {
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Could not find JSON in response");
-    const parsed = JSON.parse(jsonMatch[0]);
-    return parsed as ProvideCorrectiveNewsOutput;
+    if (!jsonMatch) throw new Error("No JSON found in response");
+    return JSON.parse(jsonMatch[0]) as ProvideCorrectiveNewsOutput;
   } catch (e) {
     console.error("AI returned invalid JSON for news links:", rawText);
-    throw new Error("The AI failed to find corrective news. Please try again.");
+    throw new Error("Failed to find corrective news links. Please try again.");
   }
 }
